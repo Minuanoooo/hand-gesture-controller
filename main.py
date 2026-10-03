@@ -1,6 +1,7 @@
 import cv2 as cv
 import mediapipe as mp
 import time
+import pyautogui
 
 face_cascade = cv.CascadeClassifier(
     cv.data.haarcascades + "haarcascade_frontalface_default.xml"
@@ -74,8 +75,8 @@ while True:
     for landmarks in result.hand_landmarks:
         current_sign = is_index_extended(landmarks)
         
-        if current_sign == False and previous_sign == True:
-            print('next video')
+        if not current_sign and previous_sign:
+            pyautogui.press('down')
         previous_sign = current_sign
         if current_sign:
             print("палец вытянут")
