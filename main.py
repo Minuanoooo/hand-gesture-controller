@@ -53,7 +53,6 @@ while True:
     )
 
     result = landmarker.detect_for_video(image,current_time_ms)
-    print("hands:", len(result.hand_landmarks))
     height, width = frame.shape[:2]
 
     for landmarks in result.hand_landmarks:
@@ -65,7 +64,11 @@ while True:
 
         d_05 = distance(p0, p5)
         ratio = d_58 / d_05
-        print("ratio:", ratio)
+
+        if ratio > 0.5:
+            print('палец вытянут')
+        else:
+            print('палец согнут')
         for landmark_id in fingers:
 
             point = landmarks[landmark_id]
