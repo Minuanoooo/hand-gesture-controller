@@ -1,30 +1,48 @@
-# Face Detection
+# Hand Gesture Controller
 
-A small Python and OpenCV application that uses a webcam to detect faces in real time.
+A small project I made to experiment with hand tracking and computer vision.
 
-When a face is detected, the application draws a bounding box around it and displays a label below the detected area.
+The idea is pretty simple: use a webcam to track my hand, detect when my index finger is bent, and then use that gesture to press a keyboard key.
 
-## How It Works
+For example, I can use it to switch to the next video in a browser without touching the keyboard.
 
-The application captures video from the webcam and processes each frame:
+## How it works
+
+The project uses **MediaPipe** to detect the hand and its landmarks.
+
+I use two points from the index finger:
+
+* `5` — the base of the index finger
+* `8` — the fingertip
+
+I calculate the distance between them and compare it to the size of the hand.
+
+This gives me a simple way to tell whether the index finger is extended or bent.
+
+When the finger changes from:
 
 ```text
-Webcam
-  ↓
-Frame
-  ↓
-Grayscale
-  ↓
-Haar Cascade
-  ↓
-Face Detection
-  ↓
-Bounding Box + Label
+extended → bent
 ```
 
-Face detection is handled using a pre-trained Haar Cascade provided by OpenCV.
+the program sends a keyboard press using `PyAutoGUI`.
 
-## Installation
+By default:
+
+```python
+pyautogui.press("down")
+```
+
+So pressing the gesture sends the `Down` key.
+
+## What I used
+
+* Python
+* OpenCV
+* MediaPipe
+* PyAutoGUI
+
+## Setup
 
 Clone the repository:
 
@@ -36,7 +54,20 @@ cd face_detection
 Create a virtual environment:
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
+```
+
+Activate it.
+
+**Windows:**
+
+```bash
+.venv\Scripts\activate
+```
+
+**Linux / macOS:**
+
+```bash
 source .venv/bin/activate
 ```
 
@@ -46,29 +77,120 @@ Install the dependencies:
 pip install -r requirements.txt
 ```
 
-## Usage
+`requirements.txt`:
 
-Run the application:
+```text
+opencv-python<5
+mediapipe
+pyautogui
+```
+
+## MediaPipe model
+
+The project also needs the MediaPipe Hand Landmarker model:
+
+```text
+hand_landmarker.task
+```
+
+Put it next to `main.py`:
+
+```text
+face_detection/
+├── hand_landmarker.task
+├── main.py
+├── requirements.txt
+└── README.md
+```
+
+## Running it
+
+Start the program:
 
 ```bash
 python main.py
 ```
 
-A window with the webcam feed will open.
+A window with the camera feed will open.
 
-Press `q` to exit the application.
+Point your hand at the camera and bend your index finger.
 
-## Requirements
+The program should detect the change and press the selected keyboard key.
 
-* Python 3
-* OpenCV 4.x
-* A working webcam
+Press `Q` to close the camera window.
 
-## Project Structure
+## Changing the key
+
+You can change what happens when the gesture is detected.
+
+In `main.py`, find:
+
+```python
+pyautogui.press("down")
+```
+
+and replace `"down"` with another key.
+
+For example:
+
+```python
+pyautogui.press("space")
+```
+
+or:
+
+```python
+pyautogui.press("right")
+```
+
+Some other examples:
+
+```python
+pyautogui.press("left")
+pyautogui.press("right")
+pyautogui.press("up")
+pyautogui.press("down")
+pyautogui.press("space")
+pyautogui.press("enter")
+```
+
+So the gesture itself stays the same — only the action changes.
+
+## Why I made it this way
+
+I didn't want the program to press a key every frame while the finger was bent.
+
+The camera processes many frames per second, so I keep track of the previous finger state with `previous_sign`.
+
+The program only reacts when it sees:
 
 ```text
-face_detection/
-├── main.py
-├── requirements.txt
-└── README.md
+extended → bent
 ```
+
+After that, it waits until the finger is extended again before another gesture can trigger the action.
+
+## Current limitations
+
+It's still a small experiment, so it's not perfect.
+
+Detection can be affected by:
+
+* lighting
+* camera quality
+* hand position
+* the angle of the hand
+
+The threshold for detecting a bent finger is also set manually and may need to be adjusted for different setups.
+
+## What's next
+
+Some things I'd like to try later:
+
+* add a cooldown between actions
+* make the gesture detection more stable
+* add more gestures
+* control volume and play/pause
+* assign different keys to different gestures
+
+This is mainly a small project for learning computer vision and experimenting with gesture-based controls.

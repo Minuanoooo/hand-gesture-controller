@@ -30,3 +30,6 @@ typing-inspection==0.4.4
 typing_extensions==4.16.0
 userpath==1.9.2
 uvicorn==0.52.4
+opencv-python<5
+mediapipe
+pyautogui
