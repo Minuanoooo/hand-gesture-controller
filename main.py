@@ -11,7 +11,7 @@ base_options = mp.tasks.BaseOptions(
 )
 options = mp.tasks.vision.HandLandmarkerOptions(
     base_options=base_options,
-    num_hands=2,
+    num_hands=1,
     running_mode = mp.tasks.vision.RunningMode.VIDEO
 )
 
@@ -27,6 +27,7 @@ cv.namedWindow('frame', cv.WINDOW_NORMAL)
 cv.resizeWindow('frame', 1280, 720)
 fingers = [4,8,12,16,20]
 size = 10
+previous_sign = True
 
 def distance(p1, p2):
     x = p2[0] - p1[0]
@@ -45,15 +46,15 @@ def is_index_extended(landmarks):
 
     d_05 = distance(p0, p5)
     ratio = d_58 / d_05
-
     if ratio > 0.5:
         return True
     else:
         return False
-            
+    
 while True:
     ret,frame = cap.read()
 
+    
     if not  ret:
         print("Can't receive frame (stream end?). Exiting ...")
         break
@@ -71,8 +72,12 @@ while True:
     height, width = frame.shape[:2]
 
     for landmarks in result.hand_landmarks:
-        index_extended = is_index_extended(landmarks)
-        if index_extended:
+        current_sign = is_index_extended(landmarks)
+        
+        if current_sign == False and previous_sign == True:
+            print('next video')
+        previous_sign = current_sign
+        if current_sign:
             print("палец вытянут")
         else:
             print("палец согнут")
