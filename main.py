@@ -53,9 +53,19 @@ while True:
     )
 
     result = landmarker.detect_for_video(image,current_time_ms)
+    print("hands:", len(result.hand_landmarks))
     height, width = frame.shape[:2]
 
     for landmarks in result.hand_landmarks:
+        p1 = (landmarks[5].x, landmarks[5].y)
+        p2 = (landmarks[8].x, landmarks[8].y)
+        d_58 = distance(p1, p2)
+        p0 = (landmarks[0].x, landmarks[0].y)
+        p5 = (landmarks[5].x, landmarks[5].y)
+
+        d_05 = distance(p0, p5)
+        ratio = d_58 / d_05
+        print("ratio:", ratio)
         for landmark_id in fingers:
 
             point = landmarks[landmark_id]
@@ -73,7 +83,6 @@ while True:
 
             cv.rectangle(frame, top_left, bottom_right, (255, 255, 255), 1)
 
-    
 #    for x, y, w, h in faces:
 #        cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 #        cv.putText(frame,'pidor', (x, y + h + 25), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2, cv.LINE_AA)
