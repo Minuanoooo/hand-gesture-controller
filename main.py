@@ -28,6 +28,14 @@ cv.resizeWindow('frame', 1280, 720)
 fingers = [4,8,12,16,20]
 size = 10
 
+def distance(p1, p2):
+    x = p2[0] - p1[0]
+    y = p2[1] - p1[1]
+
+    d = x**2 + y**2
+
+    return d**0.5
+
 while True:
     ret,frame = cap.read()
 
