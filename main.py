@@ -36,6 +36,21 @@ def distance(p1, p2):
 
     return d**0.5
 
+def is_index_extended(landmarks):
+    p1 = (landmarks[5].x, landmarks[5].y)
+    p2 = (landmarks[8].x, landmarks[8].y)
+    d_58 = distance(p1, p2)
+    p0 = (landmarks[0].x, landmarks[0].y)
+    p5 = (landmarks[5].x, landmarks[5].y)
+
+    d_05 = distance(p0, p5)
+    ratio = d_58 / d_05
+
+    if ratio > 0.5:
+        return True
+    else:
+        return False
+            
 while True:
     ret,frame = cap.read()
 
@@ -56,19 +71,11 @@ while True:
     height, width = frame.shape[:2]
 
     for landmarks in result.hand_landmarks:
-        p1 = (landmarks[5].x, landmarks[5].y)
-        p2 = (landmarks[8].x, landmarks[8].y)
-        d_58 = distance(p1, p2)
-        p0 = (landmarks[0].x, landmarks[0].y)
-        p5 = (landmarks[5].x, landmarks[5].y)
-
-        d_05 = distance(p0, p5)
-        ratio = d_58 / d_05
-
-        if ratio > 0.5:
-            print('палец вытянут')
+        index_extended = is_index_extended(landmarks)
+        if index_extended:
+            print("палец вытянут")
         else:
-            print('палец согнут')
+            print("палец согнут")
         for landmark_id in fingers:
 
             point = landmarks[landmark_id]
